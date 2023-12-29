@@ -39,6 +39,7 @@ try:
 ${indentedPythonCode}
 except Exception as e:
     print(f'Error: {e}')
+    print('ERROR')
 finally:
     print('END OF EXECUTION')
 `;
@@ -55,7 +56,7 @@ pd.set_option("display.width", 79)
 
 export function processCodeBlocks(blocks: Array<{ [key: string]: string }>) : string {
   // Filter out only code blocks and deep copy
-  const codeBlocks = JSON.parse(JSON.stringify(blocks.filter(block => block.tag === 'code'))) as Array<{ [key: string]: string }>;
+  const codeBlocks = JSON.parse(JSON.stringify(blocks.filter(block => block.tag === 'code' && !block.error))) as Array<{ [key: string]: string }>;
 
   // Process each block except the last one to remove print statements
   for (let i = 0; i < codeBlocks.length - 1; i++) {

@@ -72,7 +72,24 @@ export default function Home() {
 
   // Handles stdout, when execution is finished, updates blocks
   useEffect(() => {
-    if (stdout.endsWith('END OF EXECUTION\n')) {
+    if (stdout.endsWith('ERROR\nEND OF EXECUTION\n')) {
+      setBlocks(blocks => {
+        const updatedBlocks = blocks.map((block, index) => {
+          // If it's the last block, update its 'error' key
+          if (index === blocks.length - 1) {
+            return { ...block, error: '1' };
+          }
+          return block;
+        });
+      
+        // Add the new block as before
+        return [...updatedBlocks, {
+          tag: 'output',
+          content: stdout.slice(0, -'ERROR\nEND OF EXECUTION\n'.length).trim(),
+          id: crypto.randomUUID(),
+        }];
+      });
+    } else if (stdout.endsWith('END OF EXECUTION\n')) {
       setBlocks(blocks => [...blocks, {
         tag: 'output',
         content: stdout.slice(0, -'END OF EXECUTION\n'.length).trim(),

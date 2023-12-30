@@ -85,14 +85,14 @@ export default function Home() {
         // Add the new block as before
         return [...updatedBlocks, {
           tag: 'output',
-          content: stdout.slice(0, -'ERROR\nEND OF EXECUTION\n'.length).trim(),
+          content: stdout.slice(0, -'ERROR\nEND OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
           id: crypto.randomUUID(),
         }];
       });
     } else if (stdout.endsWith('END OF EXECUTION\n')) {
       setBlocks(blocks => [...blocks, {
         tag: 'output',
-        content: stdout.slice(0, -'END OF EXECUTION\n'.length).trim(),
+        content: stdout.slice(0, -'END OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
         id: crypto.randomUUID(),
       }])
     }
@@ -101,7 +101,7 @@ export default function Home() {
 
   // When completion is finished updates blocks
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && completion.trim().length > 0) {
       // console.log(completion);
       setBlocks(blocks => [...blocks, ...extractBlocks(completion)]);
     }
@@ -111,16 +111,16 @@ export default function Home() {
   useEffect(() => {
     console.log(blocks);
     scrollToBottom();
-    if (blocks.length > 0 && blocks.length < 12) {
+    if (blocks.length > 0 && blocks.length < 15) {
       if (blocks[blocks.length - 1].tag === 'code') {
         const codeToRun = processCodeBlocks(blocks);
-        console.log(codeToRun);
+        // console.log(codeToRun);
         console.log('Running python...');
         runPython(codeToRun);
       } else if (blocks[blocks.length - 1].tag === 'file' || blocks[blocks.length - 1].tag === 'output'){
         const prompt = blocks.map(block => blockToString(block)).join('\n');;
         console.log('Running completion...');
-        console.log(prompt);
+        // console.log(prompt);
         complete(prompt);
       } else {
         setIsRunning(false);
@@ -129,8 +129,8 @@ export default function Home() {
 
   }, [blocks]);
 
-  console.log(stderr);
-  console.log(stdout);
+  // console.log(stderr);
+  // console.log(stdout);
   return (
     <PythonProvider>
       <div className="max-w-3xl mx-auto">

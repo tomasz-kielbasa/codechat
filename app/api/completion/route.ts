@@ -14,6 +14,9 @@ export async function POST(req: Request) {
   const formattedPrompt = `<instruction>
 Which city in Poland had the highest pollution in 2022?
 </instruction>
+<file>
+air_pollution.csv
+</file>
 <code>
 import pandas as pd
 
@@ -32,6 +35,9 @@ print(pollution_data.head())
 3   Ordino      Andorra   NaN   NaN   NaN   7.4   7.3   5.4   5.3
 4   Luanda       Angola   NaN   NaN  15.9  13.0  11.0   8.8   8.7
 </output>
+<text>
+I should only include columns where \`country\` is Poland, then extract the name of a city where value in \`2022\` column is the highest.
+</text>
 <code>
 # Filter the data for cities in Poland and sort by pollution levels in 2022
 poland_pollution = pollution_data[pollution_data['country'] == 'Poland']
@@ -49,75 +55,13 @@ print(highest_pollution_city_2022['city'], highest_pollution_city_2022['2022'])
 In 2022, the city in Poland with the highest level of pollution was Orzesze, with a pollution index of 32.1.
 </text>
 
-<instruction>
-What was the highest price in 2016?
-</instruction>
-<file>
-apple_stock.csv
-</file>
-<code>
-import pandas as pd
-
-# Load the CSV file
-file_path = 'apple_stock.csv'
-stock_data = pd.read_csv(file_path)
-
-# Display the first few rows of the dataframe to understand its structure
-print(stock_data.head())
-</code>
-<output>
-Date       Open       High        Low      Close  Adj Close  \
-0  2014-01-02  19.845715  19.893929  19.715000  19.754642  17.318729   
-1  2014-01-03  19.745001  19.775000  19.301071  19.320715  16.938305   
-2  2014-01-06  19.194643  19.528570  19.057142  19.426071  17.030676   
-3  2014-01-07  19.440001  19.498571  19.211430  19.287144  16.908880   
-4  2014-01-08  19.243214  19.484285  19.238930  19.409286  17.015959   
-
-      Volume  
-0  234684800  
-1  392467600  
-2  412610800  
-3  317209200  
-4  258529600
-</output>
-<code>
-# Filter the data for 2016 and sort by price
-stock_2016 = stock_data[stock_data['Date'].dt.year == 2016]
-
-# Get the highest price in 2016
-highest_price_2016 = stock_2016['High'].max()
-
-print(highest_price_2016)
-</code>
-<output>
-Error: Can only use .dt accessor with datetimelike values
-</output>
-<code>
-# Convert Date column to datetime
-apple_stock_data['Date'] = pd.to_datetime(apple_stock_data['Date'])
-
-# Filter the data for 2016 and sort by price
-stock_2016 = stock_data[stock_data['Date'].dt.year == 2016]
-
-# Get the highest price in 2016
-highest_price_2016 = stock_2016['High'].max()
-
-print(highest_price_2016)
-</code>
-<output>
-29.5625
-</output>
-<text>
-The highest price of Apple stock in 2016 was approximately $29.56.
-</text>
-
 ${prompt}`
   console.log(formattedPrompt)
 
   // Request the OpenAI API for the response based on the prompt
   const response = await openai.completions.create({
     model: 'mistralai/Mixtral-8x7B-v0.1',
-    max_tokens: 256,
+    max_tokens: 512,
     stream: true,
     stop: ['<output>', '<instruction>'],
     temperature: 0.0,

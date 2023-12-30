@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { CodeBlock, vs2015 } from 'react-code-blocks';
+import Markdown from 'react-markdown';
 
 interface ReasoningBlocksProps {
     blocks: Array<{ [key: string]: string }>;
@@ -25,8 +26,8 @@ export const ReasoningBlocks: React.FC<ReasoningBlocksProps> = ({ blocks }) => {
                     />
                 }
                 if (tag === 'text') {
-                    return (<div className='bg-secondary p-2 rounded-lg' key={id}>
-                        <pre className='whitespace-pre-wrap' key={id}>{content}</pre>
+                    return (<div className='bg-secondary p-2 rounded' key={id}>
+                        <Markdown key={id}>{content}</Markdown>
                     </div>)
                 }
                 if (tag === 'output') {

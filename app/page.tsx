@@ -26,7 +26,7 @@ export default function Home() {
 
   const { runPython, stdout, stderr, isReady, writeFile } = usePython({
     packages: {
-      official: ['pandas'],
+      official: ['pandas', 'matplotlib'],
     }
   });
 
@@ -72,30 +72,54 @@ export default function Home() {
 
   // Handles stdout, when execution is finished, updates blocks
   useEffect(() => {
-    if (stdout.endsWith('ERROR\nEND OF EXECUTION\n')) {
-      setBlocks(blocks => {
-        const updatedBlocks = blocks.map((block, index) => {
-          // If it's the last block, update its 'error' key
-          if (index === blocks.length - 1) {
-            return { ...block, error: '1' };
-          }
-          return block;
-        });
-      
-        // Add the new block as before
-        return [...updatedBlocks, {
-          tag: 'output',
-          content: stdout.slice(0, -'ERROR\nEND OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
-          id: crypto.randomUUID(),
-        }];
-      });
-    } else if (stdout.endsWith('END OF EXECUTION\n')) {
-      setBlocks(blocks => [...blocks, {
-        tag: 'output',
-        content: stdout.slice(0, -'END OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
-        id: crypto.randomUUID(),
-      }])
+    // console.log(stdout)
+    if (stdout.endsWith(', ')) {
+      const output: Array<{ [key: string]: string }> = JSON.parse('[' + stdout.replace(/\n/g, "\\n").slice(0, -2) + ']');
+      const last = output.pop()!;
+      if (last.tag == 'end') {
+        setBlocks((prev) => {return [
+          ...prev, ...output.map((block) => {
+            block.id = crypto.randomUUID();
+            block.content = block.content.replace(/\\n/g, "\n")
+            return block
+          })
+        ]})
+      }
+      if (last.tag == 'error') {
+        setBlocks((prev) => {return [
+          ...prev, ...output.map((block) => {
+            block.id = crypto.randomUUID();
+            return block
+          })
+        ]})
+      }
     }
+
+    
+  //   if (stdout.endsWith('ERROR\nEND OF EXECUTION\n')) {
+  //     setBlocks(blocks => {
+  //       const updatedBlocks = blocks.map((block, index) => {
+  //         // If it's the last block, update its 'error' key
+  //         if (index === blocks.length - 1) {
+  //           return { ...block, error: '1' };
+  //         }
+  //         return block;
+  //       });
+      
+  //       // Add the new block as before
+  //       return [...updatedBlocks, {
+  //         tag: 'output',
+  //         content: stdout.slice(0, -'ERROR\nEND OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
+  //         id: crypto.randomUUID(),
+  //       }];
+  //     });
+  //   } else if (stdout.endsWith('END OF EXECUTION\n')) {
+  //     setBlocks(blocks => [...blocks, {
+  //       tag: 'output',
+  //       content: stdout.slice(0, -'END OF EXECUTION\n'.length).trimEnd().replace(/^\n+/, ""),
+  //       id: crypto.randomUUID(),
+  //     }])
+  //   }
   }, [stdout])
 
 

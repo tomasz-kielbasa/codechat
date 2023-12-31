@@ -33,6 +33,9 @@ export const ReasoningBlocks: React.FC<ReasoningBlocksProps> = ({ blocks }) => {
                 if (tag === 'output') {
                     return <pre className='p-2 whitespace-pre-wrap' key={id}>{content}</pre>
                 }
+                if (tag === 'img') {
+                    return <img className='mt-2' src={content} key={id} />
+                }
 
                 return <></>
             })}

@@ -36,7 +36,7 @@ print(pollution_data.head())
 4   Luanda       Angola   NaN   NaN  15.9  13.0  11.0   8.8   8.7
 </output>
 <text>
-I should only include columns where \`country\` is Poland, then extract the name of a city where value in \`2022\` column is the highest.
+Instruction states to find a city in Poland, so I should only include columns where \`country\` is Poland, then extract the name of a city where value in \`2022\` column is the highest.
 </text>
 <code>
 # Filter the data for cities in Poland and sort by pollution levels in 2022

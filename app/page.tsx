@@ -86,8 +86,16 @@ export default function Home() {
         ]})
       }
       if (last.tag == 'error') {
-        setBlocks((prev) => {return [
-          ...prev, ...output.map((block) => {
+        setBlocks((prev) => {
+          const updatedBlocks = prev.map((block, index) => {
+            // If it's the last block, update its 'error' key
+            if (index === blocks.length - 1) {
+              return { ...block, error: '1' };
+            }
+            return block;
+          });
+          return [
+          ...updatedBlocks, ...output.map((block) => {
             block.id = crypto.randomUUID();
             return block
           })
@@ -138,7 +146,7 @@ export default function Home() {
     if (blocks.length > 0 && blocks.length < 15) {
       if (blocks[blocks.length - 1].tag === 'code') {
         const codeToRun = processCodeBlocks(blocks);
-        // console.log(codeToRun);
+        console.log(codeToRun);
         console.log('Running python...');
         runPython(codeToRun);
       } else if (blocks[blocks.length - 1].tag === 'file' || blocks[blocks.length - 1].tag === 'output'){

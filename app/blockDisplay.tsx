@@ -36,12 +36,13 @@ export const BlockDisplay = ({ blocks }: ReasoningBlocksProps) => {
         }
         if (tag === 'img') {
           return <img
+            key={id}
             src={content}
             className="w-full"
           />
         }
         if (tag === 'instruction') {
-          return <p className="p-2 rounded bg-accent-foreground w-fit self-end">{content}</p>
+          return <p key={id} className="p-2 rounded bg-accent-foreground w-fit self-end">{content}</p>
         }
       })}
     </div>

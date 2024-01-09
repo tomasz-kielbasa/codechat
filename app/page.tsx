@@ -81,7 +81,6 @@ pd.set_option("display.width", 79)
   }
 
   // Concatenate all blocks into one string
-  console.log(codeBlocks.map(block => block.content).join('\n'))
   return wrapCode(codeBlocks.map(block => block.content).join('\n'));
 }
 
@@ -111,8 +110,6 @@ export default function Home() {
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault()
-    console.log(`Instruction: ${instruction}`)
-    console.log(`Filename: ${file?.name}`)
     if (blocks.length > 0) {
       setBlocks((prev) => [
         ...prev,
@@ -162,6 +159,7 @@ export default function Home() {
     if (blocks.length > 0){
       const lastTag = blocks[blocks.length - 1].tag
       if (lastTag === 'instruction' || lastTag === 'output') {
+        console.log('Running completion...')
         const updateBlocks = async () => {
           const newBlocks = await generateNewBlocks(blocks)
           if (newBlocks.length > 0) {
@@ -185,7 +183,6 @@ export default function Home() {
 
   // Handles stdout, when execution is finished, updates blocks
   useEffect(() => {
-    console.log(stdout)
     if (stdout.endsWith(', ')) {
       try {
         const output: Array<{ [key: string]: string }> = JSON.parse('[' + stdout.replace(/\n/g, "\\n").slice(0, -2) + ']');
